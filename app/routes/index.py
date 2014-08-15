@@ -5,7 +5,6 @@ from flask import jsonify
 import logging
 from logging.handlers import RotatingFileHandler
 import json, datetime
-from bson import objectid
 from flask import flash
 
 import urllib2
