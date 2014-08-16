@@ -62,6 +62,14 @@ def get_property_data(json_result, district_name, geocode):
                         property_dict['street'] = property_item['resultlist.realEstate']['address']['street']
                     else:
                         property_dict['street'] = 'NA'
+                    if property_item['resultlist.realEstate']['builtInKitchen'] == 'true':
+                        property_dict['built_in_kitchen'] = 1
+                    else:
+                        property_dict['built_in_kitchen'] = 0
+                    if property_item['resultlist.realEstate']['balcony'] == 'true':
+                        property_dict['balcony'] = 1
+                    else:
+                        property_dict['balcony'] = 0
                     property_dict['id'] = property_item['realEstateId']
                     property_dict['city'] = property_item['resultlist.realEstate']['address']['city']
                     property_dict['quarter'] = property_item['resultlist.realEstate']['address']['quarter']
@@ -130,6 +138,7 @@ def merge_wishlist(crawled_data, wishlist_file):
         'counter':'added_to_wishlist',
         'contacted_counter': 'contacted_realtor'})
     new_df = pd.merge(crawled_data, wishlist_df, how='left', left_on='id', right_on='exposeId')
+    new_df = new_df.drop('exposeId', axis=1)
     new_df['added_to_wishlist'] = new_df['added_to_wishlist'].fillna(0)
     new_df['contacted_realtor'] = new_df['contacted_realtor'].fillna(0)
     return new_df
