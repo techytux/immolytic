@@ -12,12 +12,28 @@ var
 	chart8 = dc.bubbleChart("#s8");
 
 d3.json("/js/data.json", function (error, json) {
-	var data = crossfilter(json);
 
-	var dimDistrict = data.dimension(function(d){
-		return d.quarter;
+	var rawData = json;
+	rawData.forEach(function(el){
+		el.district = Math.ceil(Math.random() * 12);
 	});
-	var groupDistrictPropertyCount = dimDistrict.group().reduceCount();
+	var data = crossfilter(rawData);
+
+	// crossfilter dimensions	
+	var
+		dimDistrict = data.dimension(function(d){
+			return d.district;
+		}),
+		dimQuarter = data.dimension(function(d){
+			return d.quarter;
+		});
+
+	// crossfilter groups
+	var
+		groupDistrictPropertyCount = dimDistrict.group().reduceCount(),
+		groupQuarterPropertyCount  = dimQuarter.group().reduceCount();
+
+
 
 	//d3.json("/js/us-states.json", function (error, berlinJson) {
 		chart1
@@ -39,8 +55,8 @@ d3.json("/js/data.json", function (error, json) {
 		chart2
 			//.width(990)
 			.height(300)
-                	.dimension(dimDistrict)
-                	.group(groupDistrictPropertyCount)
+                	.dimension(dimQuarter)
+                	.group(groupQuarterPropertyCount)
                 	//.overlayGeoJson(berlinJson.features, "district", function(d) {
                         //	return d.properties.Name;
 			//})
