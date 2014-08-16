@@ -3,9 +3,10 @@ from flask.ext.restful import Api, Resource
 from flask import jsonify
 import logging
 from logging.handlers import RotatingFileHandler
-import requests
+import requests, json
 from is24api import IS24_OAUTH
 from crossdomain import *
+
 
 api = Api(app)
 app.secret_key = 'is24hacksecret'
@@ -17,10 +18,6 @@ def root():
 @app.route('/search', methods=['GET'])
 @crossdomain(origin='*')
 def search():
-    url = 'http://rest.immobilienscout24.de/restapi/api/search/v1.0/search/region?realestatetype=apartmentrent&geocodes=1276'
-    headers = {'Accept': 'application/json'}
-    r = requests.get(url=url, auth=IS24_OAUTH, headers=headers)
-
-    return jsonify(r.json())
-
-# api.add_resource(Search, '/search')
+    with open('app/crawler/crawled_data.json', 'r') as datafile:
+        data = json.load(datafile)
+        return jsonify({'results': data})
