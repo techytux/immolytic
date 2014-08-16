@@ -90,11 +90,6 @@ def get_price_trend(districts):
                 'percentual_change': percentual_change,
                 'trend': trend
                 })
-        else:
-            results.append({
-                    'name': name,
-                    'geocode': geocode,
-                    'error': 'Ups, no data for this one!'})
     return results
 
 

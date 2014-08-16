@@ -36,3 +36,10 @@ def search():
     with open('app/crawler/crawled_data.json', 'r') as datafile:
         data = json.load(datafile)
         return jsonify({'results': data})
+
+@app.route('/pricetrends', methods=['GET'])
+@crossdomain(origin='*')
+def pricetrends():
+    with open('app/crawler/price_trends.json', 'r') as datafile:
+        data = json.load(datafile)
+        return jsonify({'results': data})
