@@ -2,7 +2,7 @@
 
 import json, requests
 from is24api import IS24_OAUTH
-import time
+import random
 
 crawled_data = []
 def get_districts(filename):
@@ -54,6 +54,8 @@ def get_property_data(json_result, district_name, geocode):
                     property_dict['floor_space'] = property_item['resultlist.realEstate']['livingSpace']
                     property_dict['district_name'] = district_name
                     property_dict['geocode'] = geocode
+                    property_dict['household_income'] = random.randrange(20, 200) * 1000
+     
                 except KeyError, e:
                     print 'Caught key error'
             else:
