@@ -2,7 +2,7 @@
 
 import json, requests
 from is24api import IS24_OAUTH
-import time
+import random
 
 crawled_data = []
 def get_districts(filename):
@@ -21,34 +21,30 @@ def get_urls(districts):
     urls = []
     for item in districts:
         url = 'http://rest.immobilienscout24.de/restapi/api/search/v1.0/search/region?realestatetype=ApartmentBuy&geocodes=%s' % item['geocode']
-        urls.append(url)
+        urls.append({'url': url, 'district_name': item['name'], 'geocode': item['geocode']})
     
     urls.pop(0)
     return urls
 
-def crawler(url):
+def crawler(url, district_name, geocode):
     print '***** Making request %s *****' % url
     headers = {'Accept': 'application/json'}
     r = requests.get(url=url, auth=IS24_OAUTH, headers=headers)
 
     json_result = r.json()
-    data = get_property_data(json_result)
+    data = get_property_data(json_result, district_name, geocode)
     if data:
-        crawled_data.append(get_property_data(json_result))
+        crawled_data.append(data)
 
     if 'next' in json_result['resultlist.resultlist']['paging'].keys():
         next_url = json_result['resultlist.resultlist']['paging']['next']['@xlink.href']
-        # print next_url
-        crawler(next_url)
+        crawler(next_url, district_name, geocode)
 
-    
-
-def get_property_data(json_result):
+def get_property_data(json_result, district_name, geocode):
     property_dict = {}
     for resultentries in json_result['resultlist.resultlist']['resultlistEntries']:
         for property_item in resultentries['resultlistEntry']:
             if(isinstance(property_item, dict)):
-                # print property_item
                 try:
                     property_dict['id'] = property_item['realEstateId']
                     property_dict['city'] = property_item['resultlist.realEstate']['address']['city']
@@ -56,6 +52,10 @@ def get_property_data(json_result):
                     property_dict['postcode'] = property_item['resultlist.realEstate']['address']['postcode']
                     property_dict['price'] = property_item['resultlist.realEstate']['price']['value']
                     property_dict['floor_space'] = property_item['resultlist.realEstate']['livingSpace']
+                    property_dict['district_name'] = district_name
+                    property_dict['geocode'] = geocode
+                    property_dict['household_income'] = random.randrange(20, 200) * 1000
+     
                 except KeyError, e:
                     print 'Caught key error'
             else:
@@ -93,16 +93,11 @@ def get_price_trend(districts):
                 })
     return results
 
-
-
 if __name__ == '__main__':
     districts = get_districts('geocodes.json')
     urls = get_urls(districts)
-    print urls[0]
-    print crawler(urls[0])
     for url in urls:
-        print '***** Making request %s *****' % url
-        crawler(url)
+        crawler(url['url'], url['district_name'], url['geocode'])
 
     price_trends = get_price_trend(districts)
 
