@@ -1,5 +1,9 @@
 body {
-  margin-top: 60px;
-  padding: 10px;
-  background-color: #ECF0F1;
+	padding: 10px;
+}
+
+.nav-brand{
+	font-size: 48px;
+	font-family: "Trebuchet MS", Helvetica, sans-serif;
+	text-align: center;	
 }
