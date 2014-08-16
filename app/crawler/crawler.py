@@ -123,6 +123,8 @@ def merge_wishlist(crawled_data, wishlist_file):
         'counter':'added_to_wishlist',
         'contacted_counter': 'contacted_realtor'})
     new_df = pd.merge(crawled_data, wishlist_df, how='left', left_on='id', right_on='exposeId')
+    new_df['added_to_wishlist'] = new_df['added_to_wishlist'].fillna(0)
+    new_df['contacted_realtor'] = new_df['contacted_realtor'].fillna(0)
     return new_df
 
 
