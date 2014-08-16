@@ -70,11 +70,12 @@ $.getJSON( "/search", function( resp ) {
 
 	var
 		color_palette = ['#cc4125', '#ff6513', '#ff891b', '#f6b26b', '#38761d', '#6aa84f', '#93c47d', '#b6d7a8', '#584c7f', '#19077c', '#3a0dcc', '#5f74ff'],
+		chart_margins = {top: 10, right: 20, bottom: 30, left: 20},
 		//berlinChart = dc.geoChoroplethChart("#s1"),
 		chart1 = dc.rowChart("#s1"),
 		chart2 = dc.rowChart("#s2"),
 		chart3 = dc.rowChart("#s3"),
-		chart4 = dc.bubbleChart("#s4"),
+		chart4 = dc.barChart("#s4"),
 		chart5 = dc.bubbleChart("#s5"),
 		chart6 = dc.bubbleChart("#s6"),
 		chart7 = dc.bubbleChart("#s7"),
@@ -122,7 +123,7 @@ $.getJSON( "/search", function( resp ) {
 			ratioAdd("buy_price_sq", "avg_anual_rental_price_sq"), ratioRemove("buy_price_sq", "avg_anual_rental_price_sq"), ratioInitial
 		),
 		groupDistrictAffordabilityIndex   = dimDistrict.group().reduce(
-			ratioAdd("avg_montly_rental_price_sq", "household_income"), ratioRemove("avg_montly_rental_price_sq", "household_income"), ratioInitial
+			ratioAdd("avg_montly_rental_price", "household_income"), ratioRemove("avg_montly_rental_price", "household_income"), ratioInitial
 		),
 
 		groupQuarterPropertyCount  = dimQuarter.group().reduceCount();
@@ -136,6 +137,7 @@ $.getJSON( "/search", function( resp ) {
 		// listings per district
 		chart1
         		.height(300)
+			.margins(chart_margins)
 			.dimension(dimDistrict)
         		.group(groupDistrictPropertyCount)
 			.ordering(function(d){
@@ -171,9 +173,33 @@ $.getJSON( "/search", function( resp ) {
         		})
         		.elasticX(true)
        			.xAxis().ticks(4);
-		// broker index per district
+
+		// affordability index per district
 		chart3
         		.height(300)
+			.margins(chart_margins)
+			.dimension(dimDistrict)
+        		.group(groupDistrictAffordabilityIndex)
+			.valueAccessor(function(d){
+				return d.value.ratio;			
+			})
+			.ordering(function(d){
+				return -d.value;		
+			})
+        		.ordinalColors(color_palette)
+        		.label(function (d) {
+            			return d.key;
+       			 })
+        		.title(function (d) {
+           			return d.value;
+        		})
+        		.elasticX(true)
+       			.xAxis().ticks(4);
+
+		// affordability index per district
+		chart4
+        		.height(300)
+			.margins(chart_margins)
 			.dimension(dimDistrict)
         		.group(groupDistrictAffordabilityIndex)
 			.valueAccessor(function(d){
