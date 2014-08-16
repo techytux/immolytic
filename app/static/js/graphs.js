@@ -66,7 +66,7 @@ $.getJSON( "/search", function( resp ) {
       } );
 
 	var
-		color_palette = ['#3182bd', '#6baed6', '#9ecae1', '#c6dbef', '#dadaeb'],
+		color_palette = ['#cc4125', '#ff510f', '#ff885b', '#ff891b', '#cfe2f3', '#ff0000', '#fff2cc', '#fce5cd', '#5f74ff', '#3a0dcc', '#19077c', '#584c7f']
 		//berlinChart = dc.geoChoroplethChart("#s1"),
 		chart1 = dc.rowChart("#s1"),
 		chart2 = dc.rowChart("#s2"),
@@ -108,7 +108,7 @@ $.getJSON( "/search", function( resp ) {
 
 	//d3.json("/js/us-states.json", function (error, berlinJson) {
 		chart1
-        		.height(600)
+        		.height(300)
 			.dimension(dimDistrict)
         		.group(groupDistrictPropertyCount)
 			.ordering(function(d){
@@ -139,7 +139,7 @@ $.getJSON( "/search", function( resp ) {
 			//.elasticX(true)
 			//.render();
 		chart2
-        		.height(600)
+        		.height(300)
 			.dimension(dimDistrict)
         		.group(groupDistrictBrokerIndex)
 			.valueAccessor(function(d){
