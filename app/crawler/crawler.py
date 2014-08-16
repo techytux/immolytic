@@ -7,6 +7,7 @@ import pandas as pd
 
 crawled_data_filename = 'crawled_data.json'
 price_trends_filename = 'price_trends.json'
+wishlist_filename = 'aggregated_wishlist_crawled_exposes.csv'
 
 crawled_data = []
 
@@ -106,13 +107,22 @@ def get_price_trend(districts):
     return results
 
 
-def merge_data(crawled_data, rent_price_trends):
+def merge_rent_prices(crawled_data, rent_price_trends):
     crawled_data_df = pd.read_json(crawled_data)
     rent_price_trends_df = pd.read_json(rent_price_trends)
     rent_price_trends_df = rent_price_trends_df.rename(columns={'last_price': 'avg_montly_rental_price_sq'})
     new_df = pd.merge(crawled_data_df, rent_price_trends_df[['geocode', 'avg_montly_rental_price_sq']], how='left', on='geocode')
     new_df['avg_anual_rental_price_sq'] = new_df['avg_montly_rental_price_sq'].apply(lambda x: float(x) * 12)
     new_df['buy_price_sq'] = new_df['price'].astype(float) / new_df['floor_space'].astype(float)
+    return new_df
+
+
+def merge_wishlist(crawled_data, wishlist_file):
+    wishlist_df = pd.read_csv(wishlist_file, sep=',')
+    wishlist_df = wishlist_df.rename(columns={
+        'counter':'added_to_wishlist',
+        'contacted_counter': 'contacted_realtor'})
+    new_df = pd.merge(crawled_data, wishlist_df, how='left', left_on='id', right_on='exposeId')
     return new_df
 
 
@@ -130,5 +140,7 @@ if __name__ == '__main__':
     with open(price_trends_filename, 'w') as price_file:
         json.dump(price_trends, price_file)
 
-    new_crawled_data = merge_data(crawled_data_filename, price_trends_filename)
+    new_crawled_data = merge_rent_prices(crawled_data_filename, price_trends_filename)
+    new_crawled_data = merge_wishlist(new_crawled_data, wishlist_filename)
+
     new_crawled_data.to_json(crawled_data_filename, orient='records')
