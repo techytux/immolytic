@@ -58,6 +58,10 @@ def get_property_data(json_result, district_name, geocode):
         for property_item in resultentries['resultlistEntry']:
             if(isinstance(property_item, dict)):
                 try:
+                    if 'street' in property_item['resultlist.realEstate']['address'].keys():
+                        property_dict['street'] = property_item['resultlist.realEstate']['address']['street']
+                    else:
+                        property_dict['street'] = 'NA'
                     property_dict['id'] = property_item['realEstateId']
                     property_dict['city'] = property_item['resultlist.realEstate']['address']['city']
                     property_dict['quarter'] = property_item['resultlist.realEstate']['address']['quarter']
