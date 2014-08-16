@@ -18,6 +18,7 @@ $.getJSON( "/search", function( resp ) {
       } );
 
 	var
+		color_palette = ['#3182bd', '#6baed6', '#9ecae1', '#c6dbef', '#dadaeb'],
 		//berlinChart = dc.geoChoroplethChart("#s1"),
 		chart1 = dc.rowChart("#s1"),
 		chart2 = dc.pieChart("#s2"),
@@ -54,7 +55,7 @@ $.getJSON( "/search", function( resp ) {
         		.height(300)
 			.dimension(dimDistrict)
         		.group(groupDistrictPropertyCount)        		
-        		.ordinalColors(['#3182bd', '#6baed6', '#9ecae1', '#c6dbef', '#dadaeb'])
+        		.ordinalColors(color_palette)
         		.label(function (d) {
             			return d.key;
        			 })
@@ -82,6 +83,7 @@ $.getJSON( "/search", function( resp ) {
 			.height(300)
                 	.dimension(dimQuarter)
                 	.group(groupQuarterPropertyCount)
+			.ordinalColors(color_palette)
                 	//.overlayGeoJson(berlinJson.features, "district", function(d) {
                         //	return d.properties.Name;
 			//})
