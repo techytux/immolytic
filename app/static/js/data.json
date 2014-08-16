@@ -1,3 +1,17 @@
 [
-  { "id" : 1, district : ""  },
+  { "id" : 1, "district" : "Mitte" },
+  { "id" : 2, "district" : "Mitte" },
+  { "id" : 3, "district" : "Mitte" },
+  { "id" : 4, "district" : "Mitte" },
+  { "id" : 5, "district" : "Mitte" },
+  { "id" : 6, "district" : "Mitte" },
+  { "id" : 7, "district" : "Mitte" },
+  { "id" : 8, "district" : "Mitte" },
+  { "id" : 9, "district" : "Mitte" },
+  { "id" : 10, "district" : "Mitte" },
+  { "id" : 11, "district" : "Mitte" },
+  { "id" : 12, "district" : "Mitte" },
+  { "id" : 13, "district" : "Mitte" },
+  { "id" : 14, "district" : "Mitte" },
+  { "id" : 15, "district" : "Mitte" }
 ]
