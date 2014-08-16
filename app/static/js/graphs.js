@@ -3,19 +3,19 @@ var data;
 $.getJSON( "http://127.0.0.1:5000/search", function( resp ) {
 
 	data = resp.results;
-	$('#exposeTable').dataTable({
-	  "data": data,
-	  "columns": [
-	    { "data": "id" },
-	    { "data": "city" },
-	    { "data": "floor_space" },
-	    { "data": "price" },
-	    { "data": "household_income" },
-	    { "data": "postcode" },
-	    { "data": "compiled_district_name" },
-	    { "data": "quarter" }
-	  ]
-	});
+      $('#exposeTable').dataTable( {
+          "data": data,
+          "columns": [
+            { "data": "id" },
+            { "data": "city" },
+            { "data": "floor_space", "sClass": "numeric" },
+            { "data": "price", render: $.fn.dataTable.render.number( ',', '.', 0, '€' ), "sClass": "numeric" },
+            { "data": "household_income", render: $.fn.dataTable.render.number( ',', '.', 0, '€' ), "sClass": "numeric" },
+            { "data": "postcode" },
+            { "data": "district_name" },
+            { "data": "quarter" }
+          ]
+      } );
 
 	var
 		//berlinChart = dc.geoChoroplethChart("#s1"),
