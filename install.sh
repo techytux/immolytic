@@ -16,4 +16,5 @@ flask/bin/pip install flask-script
 flask/bin/pip install flask-restful
 flask/bin/pip install requests
 flask/bin/pip install requests-oauthlib
+flask/bin/pip install gunicorn
 
