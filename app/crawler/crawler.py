@@ -62,10 +62,12 @@ def get_property_data(json_result, district_name, geocode):
                         property_dict['street'] = property_item['resultlist.realEstate']['address']['street']
                     else:
                         property_dict['street'] = 'NA'
+                    
                     if property_item['resultlist.realEstate']['builtInKitchen'] == 'true':
                         property_dict['built_in_kitchen'] = 1
                     else:
                         property_dict['built_in_kitchen'] = 0
+                    
                     if property_item['resultlist.realEstate']['balcony'] == 'true':
                         property_dict['balcony'] = 1
                     else:
@@ -81,8 +83,6 @@ def get_property_data(json_result, district_name, geocode):
                     property_dict['household_income'] = random.randrange(20, 200) * 1000
                     property_dict['compiled_district_name'] = get_compiled_district(district_name)
                     property_dict['number_of_rooms'] = property_item['resultlist.realEstate']['numberOfRooms']
-                    property_dict['built_in_kitchen'] = property_item['resultlist.realEstate']['builtInKitchen']
-                    property_dict['balcony'] = property_item['resultlist.realEstate']['balcony']
      
                 except KeyError, e:
                     print 'Caught key error %s' % e
@@ -129,6 +129,7 @@ def merge_rent_prices(crawled_data, rent_price_trends):
     new_df = pd.merge(crawled_data_df, rent_price_trends_df[['geocode', 'avg_montly_rental_price_sq']], how='left', on='geocode')
     new_df['avg_anual_rental_price_sq'] = new_df['avg_montly_rental_price_sq'].apply(lambda x: float(x) * 12)
     new_df['buy_price_sq'] = new_df['price'].astype(float) / new_df['floor_space'].astype(float)
+    new_df['avg_montly_rental_price'] = new_df['avg_montly_rental_price_sq'].astype(float) * new_df['floor_space'].astype(float)
     return new_df
 
 
