@@ -9,6 +9,13 @@ crawled_data_filename = 'crawled_data.json'
 price_trends_filename = 'price_trends.json'
 
 crawled_data = []
+
+def get_compiled_district(district_name):
+    with open('district_mapper.json') as datafile:
+        district_mapper = json.load(datafile)
+    compiled_district_name = district_mapper[district_name]
+    return compiled_district_name
+
 def get_districts(filename):
     districts = []
     with open(filename, 'r') as datafile:
@@ -59,9 +66,10 @@ def get_property_data(json_result, district_name, geocode):
                     property_dict['district_name'] = district_name
                     property_dict['geocode'] = geocode
                     property_dict['household_income'] = random.randrange(20, 200) * 1000
+                    property_dict['compiled_district_name'] = get_compiled_district(district_name)
      
                 except KeyError, e:
-                    print 'Caught key error'
+                    print 'Caught key error %s' % e
             else:
                 print type(property_item), property_item    
     return property_dict
