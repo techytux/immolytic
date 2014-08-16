@@ -66,14 +66,14 @@ $.getJSON( "/search", function( resp ) {
               { "data": "district_name" },
               { "data": "quarter" }
           ]
-      } );
+      });
 
 	var
-		color_palette = ['#cc4125', '#ff510f', '#ff885b', '#ff891b', '#cfe2f3', '#ff0000', '#fff2cc', '#fce5cd', '#5f74ff', '#3a0dcc', '#19077c', '#584c7f']
+		color_palette = ['#cc4125', '#ff6513', '#ff891b', '#f6b26b', '#38761d', '#6aa84f', '#93c47d', '#b6d7a8', '#584c7f', '#19077c', '#3a0dcc', '#5f74ff'],
 		//berlinChart = dc.geoChoroplethChart("#s1"),
 		chart1 = dc.rowChart("#s1"),
 		chart2 = dc.rowChart("#s2"),
-		chart3 = dc.bubbleChart("#s3"),
+		chart3 = dc.rowChart("#s3"),
 		chart4 = dc.bubbleChart("#s4"),
 		chart5 = dc.bubbleChart("#s5"),
 		chart6 = dc.bubbleChart("#s6"),
@@ -86,6 +86,26 @@ $.getJSON( "/search", function( resp ) {
 	var
 		dimDistrict = data.dimension(function(d){
 			return d.compiled_district_name;
+		}),
+		dimFloorArea = data.dimension(function(d){
+			if (d.floor_space < 50){
+				return "0-49";
+			}
+			else if (d.floor_space < 80) {
+				return "50-79";
+			}
+			else if (d.floor_space < 100) {
+				return "80-99";
+			}
+			else if (d.floor_space < 150) {
+				return "100-150";
+			}
+			else {
+				return "> 150";
+			} 
+		}),
+		dimRooms = data.dimension(function(d){
+			return d.number_of_rooms;
 		}),
 		dimQuarter = data.dimension(function(d){
 			return d.quarter;
@@ -101,6 +121,9 @@ $.getJSON( "/search", function( resp ) {
 		groupDistrictBrokerIndex   = dimDistrict.group().reduce(
 			ratioAdd("buy_price_sq", "avg_anual_rental_price_sq"), ratioRemove("buy_price_sq", "avg_anual_rental_price_sq"), ratioInitial
 		),
+		groupDistrictAffordabilityIndex   = dimDistrict.group().reduce(
+			ratioAdd("avg_montly_rental_price_sq", "household_income"), ratioRemove("avg_montly_rental_price_sq", "household_income"), ratioInitial
+		),
 
 		groupQuarterPropertyCount  = dimQuarter.group().reduceCount();
 		groupQuarterPriceSq    = dimQuarter.group().reduce(
@@ -110,6 +133,7 @@ $.getJSON( "/search", function( resp ) {
 
 
 	//d3.json("/js/us-states.json", function (error, berlinJson) {
+		// listings per district
 		chart1
         		.height(300)
 			.dimension(dimDistrict)
@@ -126,21 +150,8 @@ $.getJSON( "/search", function( resp ) {
         		})
         		.elasticX(true)
        			.xAxis().ticks(4);
-
-			//.height(300)
-                	//.dimension(dimDistrict)
-                	//.group(groupDistrictPropertyCount)
-                	//.overlayGeoJson(berlinJson.features, "district", function(d) {
-                        //	return d.properties.Name;
-			//})
-			//.x(d3.scale.ordinal())
-			//.xUnits(dc.units.ordinal)
-			//.title(function (d) {
-			//    return d.value;
-			//})
-			//.xAxis().ticks(4)
-			//.elasticX(true)
-			//.render();
+		
+		// broker index per district
 		chart2
         		.height(300)
 			.dimension(dimDistrict)
@@ -159,7 +170,27 @@ $.getJSON( "/search", function( resp ) {
            			return d.value;
         		})
         		.elasticX(true)
-       			.xAxis().ticks(4);;
+       			.xAxis().ticks(4);
+		// broker index per district
+		chart3
+        		.height(300)
+			.dimension(dimDistrict)
+        		.group(groupDistrictAffordabilityIndex)
+			.valueAccessor(function(d){
+				return d.value.ratio;			
+			})
+			.ordering(function(d){
+				return -d.value;		
+			})
+        		.ordinalColors(color_palette)
+        		.label(function (d) {
+            			return d.key;
+       			 })
+        		.title(function (d) {
+           			return d.value;
+        		})
+        		.elasticX(true)
+       			.xAxis().ticks(4);
 	//});
 	dc.renderAll();
 });
