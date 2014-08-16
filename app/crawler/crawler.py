@@ -32,7 +32,6 @@ def crawler(url):
     r = requests.get(url=url, auth=IS24_OAUTH, headers=headers)
 
     json_result = r.json()
-    time.sleep(2)
 
     crawled_data.append(get_property_data(json_result))
 
@@ -52,7 +51,7 @@ def get_property_data(json_result):
                 try:
                     property_dict['id'] = property_item['realEstateId']
                     property_dict['city'] = property_item['resultlist.realEstate']['address']['city']
-                    property_dict['quarter'] = property_item['resultlist.realEstate']['address']['city']
+                    property_dict['quarter'] = property_item['resultlist.realEstate']['address']['quarter']
                     property_dict['price'] = property_item['resultlist.realEstate']['price']['value']
                     property_dict['floor_space'] = property_item['resultlist.realEstate']['livingSpace']
                 except KeyError, e:
