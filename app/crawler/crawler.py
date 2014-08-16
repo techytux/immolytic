@@ -62,10 +62,12 @@ def get_property_data(json_result, district_name, geocode):
                         property_dict['street'] = property_item['resultlist.realEstate']['address']['street']
                     else:
                         property_dict['street'] = 'NA'
+                    
                     if property_item['resultlist.realEstate']['builtInKitchen'] == 'true':
                         property_dict['built_in_kitchen'] = 1
                     else:
                         property_dict['built_in_kitchen'] = 0
+                    
                     if property_item['resultlist.realEstate']['balcony'] == 'true':
                         property_dict['balcony'] = 1
                     else:
@@ -81,8 +83,6 @@ def get_property_data(json_result, district_name, geocode):
                     property_dict['household_income'] = random.randrange(20, 200) * 1000
                     property_dict['compiled_district_name'] = get_compiled_district(district_name)
                     property_dict['number_of_rooms'] = property_item['resultlist.realEstate']['numberOfRooms']
-                    property_dict['built_in_kitchen'] = property_item['resultlist.realEstate']['builtInKitchen']
-                    property_dict['balcony'] = property_item['resultlist.realEstate']['balcony']
      
                 except KeyError, e:
                     print 'Caught key error %s' % e
