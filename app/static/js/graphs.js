@@ -54,14 +54,17 @@ $.getJSON( "/search", function( resp ) {
       $('#exposeTable').dataTable( {
           "data": data,
           "columns": [
-            { "data": "id" },
-            { "data": "city" },
-            { "data": "floor_space", "sClass": "numeric" },
-            { "data": "price", render: $.fn.dataTable.render.number( ',', '.', 0, '€' ), "sClass": "numeric" },
-            { "data": "household_income", render: $.fn.dataTable.render.number( ',', '.', 0, '€' ), "sClass": "numeric" },
-            { "data": "postcode" },
-            { "data": "district_name" },
-            { "data": "quarter" }
+              { "data": "id" },
+              { "data": "city" },
+              { "data": "floor_space", "sClass": "numeric" },
+              { "data": "price", render: $.fn.dataTable.render.number( ',', '.', 0, '€' ), "sClass": "numeric" },
+              { "data": "buy_price_sq", render: $.fn.dataTable.render.number( ',', '.', 0, '€' ), "sClass": "numeric" },
+              { "data": "avg_anual_rental_price_sq", render: $.fn.dataTable.render.number( ',', '.', 0, '€' ), "sClass": "numeric" },
+              { "data": "avg_montly_rental_price_sq", render: $.fn.dataTable.render.number( ',', '.', 0, '€' ), "sClass": "numeric" },
+              { "data": "household_income", render: $.fn.dataTable.render.number( ',', '.', 0, '€' ), "sClass": "numeric" },
+              { "data": "postcode" },
+              { "data": "district_name" },
+              { "data": "quarter" }
           ]
       } );
 
