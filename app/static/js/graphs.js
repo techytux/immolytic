@@ -24,6 +24,30 @@ function meanInitial() {
 	return { count : 0, sum : 0, mean : 0 };
 };
 
+function ratioAdd(num, den){
+	return function(p, v) {
+		var				
+			numerator   = p.numerator + v[num],
+			denominator = p.denominator + v[den],
+			ratio       = denominator ? numerator / denominator : 0;
+		return { numerator : numerator, denominator : denominator, ratio : ratio };
+	};
+};
+
+function ratioRemove(num, den){
+	return function(p, v) {
+		var				
+			numerator   = p.numerator - v[num],
+			denominator = p.denominator - v[den],
+			ratio       = denominator ? numerator / denominator : 0;
+		return { numerator : numerator, denominator : denominator, ratio : ratio };
+	};
+};
+
+function ratioInitial() {
+	return { numerator : 0, denominator : 0, ratio : 0 };
+};
+
 $.getJSON( "/search", function( resp ) {
 
 	data = resp.results;
@@ -68,8 +92,11 @@ $.getJSON( "/search", function( resp ) {
 	// crossfilter groups
 	var
 		groupDistrictPropertyCount = dimDistrict.group().reduceCount(),
+		groupDistrictPriceSq       = dimDistrict.group().reduce(
+			meanAdd("buy_price_sq"), meanRemove("buy_price_sq"), meanInitial
+		),
 		groupDistrictBrokerIndex   = dimDistrict.group().reduce(
-			meanAdd, meanRemove, meanInitial
+			ratioAdd("buy_price_sq", "avg_anual_rental_price_sq"), ratioRemove("buy_price_sq", "avg_anual_rental_price_sq"), ratioInitial
 		),
 
 		groupQuarterPropertyCount  = dimQuarter.group().reduceCount();
@@ -113,10 +140,10 @@ $.getJSON( "/search", function( resp ) {
 			//.render();
 		chart2
         		.height(600)
-			.dimension(dimQuarter)
-        		.group(groupQuarterPriceSq)
+			.dimension(dimDistrict)
+        		.group(groupDistrictBrokerIndex)
 			.valueAccessor(function(d){
-				return d.value.mean;			
+				return d.value.ratio;			
 			})
 			.ordering(function(d){
 				return -d.value;		
