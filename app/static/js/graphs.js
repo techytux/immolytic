@@ -1,6 +1,6 @@
 var data;
 
-$.getJSON( "http://127.0.0.1:5000/search", function( resp ) {
+$.getJSON( "/search", function( resp ) {
 
 	data = resp.results;
       $('#exposeTable').dataTable( {
