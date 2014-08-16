@@ -1,28 +1,40 @@
-// charts
+var data;
 
-var
-	//berlinChart = dc.geoChoroplethChart("#s1"),
-	chart1 = dc.barChart("#s1"),
-	chart2 = dc.pieChart("#s2"),
-	chart3 = dc.bubbleChart("#s3"),
-	chart4 = dc.bubbleChart("#s4"),
-	chart5 = dc.bubbleChart("#s5"),
-	chart6 = dc.bubbleChart("#s6"),
-	chart7 = dc.bubbleChart("#s7"),
-	chart8 = dc.bubbleChart("#s8");
+$.getJSON( "http://127.0.0.1:5000/search", function( resp ) {
 
-d3.json("/js/data.json", function (error, json) {
+	data = resp.results;
+      $('#exposeTable').dataTable( {
+          "data": data,
+          "columns": [
+            { "data": "id" },
+            { "data": "city" },
+            { "data": "floor_space", "sClass": "numeric" },
+            { "data": "price", render: $.fn.dataTable.render.number( ',', '.', 0, '€' ), "sClass": "numeric" },
+            { "data": "household_income", render: $.fn.dataTable.render.number( ',', '.', 0, '€' ), "sClass": "numeric" },
+            { "data": "postcode" },
+            { "data": "district_name" },
+            { "data": "quarter" }
+          ]
+      } );
 
-	var rawData = json;
-	rawData.forEach(function(el){
-		el.district = Math.ceil(Math.random() * 12);
-	});
-	var data = crossfilter(rawData);
+	var
+		//berlinChart = dc.geoChoroplethChart("#s1"),
+		chart1 = dc.barChart("#s1"),
+		chart2 = dc.pieChart("#s2"),
+		chart3 = dc.bubbleChart("#s3"),
+		chart4 = dc.bubbleChart("#s4"),
+		chart5 = dc.bubbleChart("#s5"),
+		chart6 = dc.bubbleChart("#s6"),
+		chart7 = dc.bubbleChart("#s7"),
+		chart8 = dc.bubbleChart("#s8");
+
+
+	var data = crossfilter(data);
 
 	// crossfilter dimensions	
 	var
 		dimDistrict = data.dimension(function(d){
-			return d.district;
+			return d.compiled_district_name;
 		}),
 		dimQuarter = data.dimension(function(d){
 			return d.quarter;
@@ -37,7 +49,6 @@ d3.json("/js/data.json", function (error, json) {
 
 	//d3.json("/js/us-states.json", function (error, berlinJson) {
 		chart1
-			//.width(990)
 			.height(300)
                 	.dimension(dimDistrict)
                 	.group(groupDistrictPropertyCount)
@@ -53,7 +64,6 @@ d3.json("/js/data.json", function (error, json) {
 			.elasticX(true)
 			.render();
 		chart2
-			//.width(990)
 			.height(300)
                 	.dimension(dimQuarter)
                 	.group(groupQuarterPropertyCount)
