@@ -19,7 +19,7 @@ $.getJSON( "http://127.0.0.1:5000/search", function( resp ) {
 
 	var
 		//berlinChart = dc.geoChoroplethChart("#s1"),
-		chart1 = dc.barChart("#s1"),
+		chart1 = dc.rowChart("#s1"),
 		chart2 = dc.pieChart("#s2"),
 		chart3 = dc.bubbleChart("#s3"),
 		chart4 = dc.bubbleChart("#s4"),
@@ -27,6 +27,8 @@ $.getJSON( "http://127.0.0.1:5000/search", function( resp ) {
 		chart6 = dc.bubbleChart("#s6"),
 		chart7 = dc.bubbleChart("#s7"),
 		chart8 = dc.bubbleChart("#s8");
+
+	console.log(dc.rowChart);
 
 
 	var data = crossfilter(data);
@@ -49,20 +51,33 @@ $.getJSON( "http://127.0.0.1:5000/search", function( resp ) {
 
 	//d3.json("/js/us-states.json", function (error, berlinJson) {
 		chart1
-			.height(300)
-                	.dimension(dimDistrict)
-                	.group(groupDistrictPropertyCount)
+        		.height(300)
+			.dimension(dimDistrict)
+        		.group(groupDistrictPropertyCount)        		
+        		.ordinalColors(['#3182bd', '#6baed6', '#9ecae1', '#c6dbef', '#dadaeb'])
+        		.label(function (d) {
+            			return d.key;
+       			 })
+        		.title(function (d) {
+           			return d.value;
+        		})
+        		.elasticX(true)
+       			.xAxis().ticks(4);
+
+			//.height(300)
+                	//.dimension(dimDistrict)
+                	//.group(groupDistrictPropertyCount)
                 	//.overlayGeoJson(berlinJson.features, "district", function(d) {
                         //	return d.properties.Name;
 			//})
-			.x(d3.scale.ordinal())
-			.xUnits(dc.units.ordinal)
-			.title(function (d) {
-			    return d.value;
-			})
+			//.x(d3.scale.ordinal())
+			//.xUnits(dc.units.ordinal)
+			//.title(function (d) {
+			//    return d.value;
+			//})
 			//.xAxis().ticks(4)
-			.elasticX(true)
-			.render();
+			//.elasticX(true)
+			//.render();
 		chart2
 			.height(300)
                 	.dimension(dimQuarter)
@@ -74,9 +89,9 @@ $.getJSON( "http://127.0.0.1:5000/search", function( resp ) {
 			//.xUnits(dc.units.ordinal)
 			.title(function (d) {
 			    return d.value;
-			})
-			//.xAxis().ticks(4)
+			});
 			//.elasticX(true)
-			.render();
+			//.xAxis().ticks(4)
 	//});
+	dc.renderAll();
 });
