@@ -3,6 +3,10 @@
 import json, requests
 from is24api import IS24_OAUTH
 import random
+import pandas as pd
+
+crawled_data_filename = 'crawled_data.json'
+price_trends_filename = 'price_trends.json'
 
 crawled_data = []
 def get_districts(filename):
@@ -93,6 +97,17 @@ def get_price_trend(districts):
                 })
     return results
 
+
+def merge_data(crawled_data, rent_price_trends):
+    crawled_data_df = pd.read_json(crawled_data)
+    rent_price_trends_df = pd.read_json(rent_price_trends)
+    rent_price_trends_df = rent_price_trends_df.rename(columns={'last_price': 'avg_montly_rental_price_sq'})
+    new_df = pd.merge(crawled_data_df, rent_price_trends_df[['geocode', 'avg_montly_rental_price_sq']], how='left', on='geocode')
+    new_df['avg_anual_rental_price_sq'] = new_df['avg_montly_rental_price_sq'].apply(lambda x: float(x) * 12)
+    new_df['buy_price_sq'] = new_df['price'].astype(float) / new_df['floor_space'].astype(float)
+    return new_df
+
+
 if __name__ == '__main__':
     districts = get_districts('geocodes.json')
     urls = get_urls(districts)
@@ -101,9 +116,11 @@ if __name__ == '__main__':
 
     price_trends = get_price_trend(districts)
 
-    with open('crawled_data.json', 'w') as datafile:
+    with open(crawled_data_filename, 'w') as datafile:
         json.dump(crawled_data, datafile)
 
-    with open('price_trends.json', 'w') as price_file:
+    with open(price_trends_filename, 'w') as price_file:
         json.dump(price_trends, price_file)
 
+    new_crawled_data = merge_data(crawled_data_filename, price_trends_filename)
+    new_crawled_data.to_json(crawled_data_filename, orient='records')
