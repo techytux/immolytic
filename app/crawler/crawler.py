@@ -129,6 +129,7 @@ def merge_rent_prices(crawled_data, rent_price_trends):
     new_df = pd.merge(crawled_data_df, rent_price_trends_df[['geocode', 'avg_montly_rental_price_sq']], how='left', on='geocode')
     new_df['avg_anual_rental_price_sq'] = new_df['avg_montly_rental_price_sq'].apply(lambda x: float(x) * 12)
     new_df['buy_price_sq'] = new_df['price'].astype(float) / new_df['floor_space'].astype(float)
+    new_df['avg_montly_rental_price'] = new_df['avg_montly_rental_price_sq'].astype(float) * new_df['floor_space'].astype(float)
     return new_df
 
 
