@@ -61,6 +61,44 @@ def get_property_data(json_result):
                 print type(property_item), property_item    
     return property_dict
 
+
+def get_price_trend(districts):
+    results = []
+    for district in districts:
+        geocode = str(district['geocode'])
+        name = str(district['name'])
+        if len(geocode) == 13:
+            region = geocode[4:7]
+            city = geocode[7:10]
+            district = geocode[10:13]
+            url = 'https://rest.immobilienscout24.de/restapi/api/ibw/v2.0/pricetrend/region/%s/city/%s/district/%s/?realEstateType=0&firstTimeUse=' % (region, city, district)
+            headers = {'Accept': 'application/json'}
+            req = requests.get(url=url, auth=IS24_OAUTH, headers=headers)
+            try:
+                last_price = req.json()['avgOfferingPrice'][-1:][0]['avgPrice']
+                last_quarter = req.json()['avgOfferingPrice'][-1:][0]['quarterOfYear']
+            except:
+                last_price = req.json()['avgOfferingPrice'][-2:-1][0]['avgPrice']
+                last_quarter = req.json()['avgOfferingPrice'][-2:-1][0]['quarterOfYear']
+            percentual_change = req.json()['percentualChange']
+            trend = req.json()['avgOfferingPrice']
+            results.append({
+                'name': name,
+                'geocode': geocode,
+                'last_quarter': last_quarter,
+                'last_price': last_price,
+                'percentual_change': percentual_change,
+                'trend': trend
+                })
+        else:
+            results.append({
+                    'name': name,
+                    'geocode': geocode,
+                    'error': 'Ups, no data for this one!'})
+    return results
+
+
+
 if __name__ == '__main__':
     districts = get_districts('geocodes.json')
     urls = get_urls(districts)
@@ -70,6 +108,11 @@ if __name__ == '__main__':
         print '***** Making request %s *****' % url
         crawler(url)
 
+    price_trends = get_price_trend(districts)
+
     with open('crawled_data.json', 'w') as datafile:
         json.dump(crawled_data, datafile)
+
+    with open('price_trends.json', 'w') as price_file:
+        json.dump(price_trends, price_file)
 
