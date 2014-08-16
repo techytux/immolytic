@@ -56,6 +56,7 @@ $.getJSON( "/search", function( resp ) {
           "columns": [
               { "data": "id" },
               { "data": "city" },
+              { "data": "street" },
               { "data": "floor_space", "sClass": "numeric" },
               { "data": "price", render: $.fn.dataTable.render.number( ',', '.', 0, '€' ), "sClass": "numeric" },
               { "data": "buy_price_sq", render: $.fn.dataTable.render.number( ',', '.', 0, '€' ), "sClass": "numeric" },
