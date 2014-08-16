@@ -1,22 +1,43 @@
 var data;
 
+function meanAdd(field){
+	return function(p, v) {
+		var				
+			count = p.count + 1,
+			sum   = p.sum + v[field],
+			mean  = count ? sum / count : 0;
+		return { count : count, sum : sum, mean : mean };
+	};
+};
+
+function meanRemove(field){
+	return function(p, v) {
+		var				
+			count = p.count - 1,
+			sum   = p.sum - v[field],
+			mean  = count ? sum / count : 0;
+		return { count : count, sum : sum, mean : mean };
+	};
+};
+
+function meanInitial() {
+	return { count : 0, sum : 0, mean : 0 };
+};
+
 $.getJSON( "/search", function( resp ) {
 
 	data = resp.results;
       $('#exposeTable').dataTable( {
           "data": data,
           "columns": [
-              { "data": "id" },
-              { "data": "city" },
-              { "data": "floor_space", "sClass": "numeric" },
-              { "data": "price", render: $.fn.dataTable.render.number( ',', '.', 0, '€' ), "sClass": "numeric" },
-              { "data": "buy_price_sq", render: $.fn.dataTable.render.number( ',', '.', 0, '€' ), "sClass": "numeric" },
-              { "data": "avg_anual_rental_price_sq", render: $.fn.dataTable.render.number( ',', '.', 0, '€' ), "sClass": "numeric" },
-              { "data": "avg_montly_rental_price_sq", render: $.fn.dataTable.render.number( ',', '.', 0, '€' ), "sClass": "numeric" },
-              { "data": "household_income", render: $.fn.dataTable.render.number( ',', '.', 0, '€' ), "sClass": "numeric" },
-              { "data": "postcode" },
-              { "data": "district_name" },
-              { "data": "quarter" }
+            { "data": "id" },
+            { "data": "city" },
+            { "data": "floor_space", "sClass": "numeric" },
+            { "data": "price", render: $.fn.dataTable.render.number( ',', '.', 0, '€' ), "sClass": "numeric" },
+            { "data": "household_income", render: $.fn.dataTable.render.number( ',', '.', 0, '€' ), "sClass": "numeric" },
+            { "data": "postcode" },
+            { "data": "district_name" },
+            { "data": "quarter" }
           ]
       } );
 
@@ -24,16 +45,13 @@ $.getJSON( "/search", function( resp ) {
 		color_palette = ['#3182bd', '#6baed6', '#9ecae1', '#c6dbef', '#dadaeb'],
 		//berlinChart = dc.geoChoroplethChart("#s1"),
 		chart1 = dc.rowChart("#s1"),
-		chart2 = dc.pieChart("#s2"),
+		chart2 = dc.rowChart("#s2"),
 		chart3 = dc.bubbleChart("#s3"),
 		chart4 = dc.bubbleChart("#s4"),
 		chart5 = dc.bubbleChart("#s5"),
 		chart6 = dc.bubbleChart("#s6"),
 		chart7 = dc.bubbleChart("#s7"),
 		chart8 = dc.bubbleChart("#s8");
-
-	console.log(dc.rowChart);
-
 
 	var data = crossfilter(data);
 
@@ -46,18 +64,29 @@ $.getJSON( "/search", function( resp ) {
 			return d.quarter;
 		});
 
+
 	// crossfilter groups
 	var
 		groupDistrictPropertyCount = dimDistrict.group().reduceCount(),
+		groupDistrictBrokerIndex   = dimDistrict.group().reduce(
+			meanAdd, meanRemove, meanInitial
+		),
+
 		groupQuarterPropertyCount  = dimQuarter.group().reduceCount();
+		groupQuarterPriceSq    = dimQuarter.group().reduce(
+			meanAdd("buy_price_sq"), meanRemove("buy_price_sq"), meanInitial
+		),
 
 
 
 	//d3.json("/js/us-states.json", function (error, berlinJson) {
 		chart1
-        		.height(300)
+        		.height(600)
 			.dimension(dimDistrict)
-        		.group(groupDistrictPropertyCount)        		
+        		.group(groupDistrictPropertyCount)
+			.ordering(function(d){
+				return -d.value;		
+			})
         		.ordinalColors(color_palette)
         		.label(function (d) {
             			return d.key;
@@ -83,20 +112,24 @@ $.getJSON( "/search", function( resp ) {
 			//.elasticX(true)
 			//.render();
 		chart2
-			.height(300)
-                	.dimension(dimQuarter)
-                	.group(groupQuarterPropertyCount)
-			.ordinalColors(color_palette)
-                	//.overlayGeoJson(berlinJson.features, "district", function(d) {
-                        //	return d.properties.Name;
-			//})
-			//.x(d3.scale.ordinal())
-			//.xUnits(dc.units.ordinal)
-			.title(function (d) {
-			    return d.value;
-			});
-			//.elasticX(true)
-			//.xAxis().ticks(4)
+        		.height(600)
+			.dimension(dimQuarter)
+        		.group(groupQuarterPriceSq)
+			.valueAccessor(function(d){
+				return d.value.mean;			
+			})
+			.ordering(function(d){
+				return -d.value;		
+			})
+        		.ordinalColors(color_palette)
+        		.label(function (d) {
+            			return d.key;
+       			 })
+        		.title(function (d) {
+           			return d.value;
+        		})
+        		.elasticX(true)
+       			.xAxis().ticks(4);;
 	//});
 	dc.renderAll();
 });
