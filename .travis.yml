@@ -1,8 +1,13 @@
 language: python
-
 python:
-  - "2.7"
-
-install: 
-  - "pip install -r requirements.txt"
-script: "./run-tests.sh"
+- '2.7'
+install:
+- pip install -r requirements.txt
+script: ./run-tests.sh
+deploy:
+  provider: heroku
+  api_key:
+    secure: gwhOqKz/Vp3sdkE+pXWJ2uXYmJ/Exsi1PWZFUSqmFVlLO3dmOOjBiGt6Ei7vErovf2k4DzMcWGy1Lvs8oGSVwNh4AuKOTSvMvQAPxheQZbO0kE1qwPc9hRrTEsW2t5Q5mnONHFrk6vrup/TnLRFIrBK01Ln5sn5Wx9JyMnS5F9c=
+  app: fast-shelf-6109
+  on:
+    repo: techytux/immolytic
