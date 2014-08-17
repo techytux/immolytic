@@ -106,6 +106,9 @@ function refreshTable(newData) {
 $.getJSON( "/search", function( resp ) {
 
 	data = resp.results;
+	data.forEach(function(d){
+		d.monthly_household_income = d.household_income / 12;
+	});
 	createTable(data);
 
 	var postcodeForm = $("#postcode_form");
@@ -228,7 +231,7 @@ $.getJSON( "/search", function( resp ) {
 			meanAdd("household_income"), meanRemove("household_income"), meanInitial
 		),
 		groupAllAffordabilityIndex = dimId.groupAll().reduce(
-			ratioAdd("avg_montly_rental_price", "household_income"), ratioRemove("avg_montly_rental_price", "household_income"), ratioInitial
+			ratioAdd("avg_montly_rental_price", "monthly_household_income"), ratioRemove("avg_montly_rental_price", "monthly_household_income"), ratioInitial
 		),
 		groupAllBrokerIndex = dimId.groupAll().reduce(
 			ratioAdd("buy_price_sq", "avg_anual_rental_price_sq"), ratioRemove("buy_price_sq", "avg_anual_rental_price_sq"), ratioInitial
@@ -244,10 +247,10 @@ $.getJSON( "/search", function( resp ) {
 			ratioAdd("buy_price_sq", "avg_anual_rental_price_sq"), ratioRemove("buy_price_sq", "avg_anual_rental_price_sq"), ratioInitial
 		),
 		groupDistrictAffordabilityIndex = dimDistrict.group().reduce(
-			ratioAdd("avg_montly_rental_price", "household_income"), ratioRemove("avg_montly_rental_price", "household_income"), ratioInitial
+			ratioAdd("avg_montly_rental_price", "monthly_household_income"), ratioRemove("avg_montly_rental_price", "monthly_household_income"), ratioInitial
 		),
 		groupDistrictAffordabilityIndex2 = dimDistrict2.group().reduce(
-			ratioAdd("avg_montly_rental_price", "household_income"), ratioRemove("avg_montly_rental_price", "household_income"), ratioInitial
+			ratioAdd("avg_montly_rental_price", "monthly_household_income"), ratioRemove("avg_montly_rental_price", "monthly_household_incomee"), ratioInitial
 		),
 		groupDistrictPriceChange = dimDistrict.group().reduce(
 			meanAdd("avg_montly_rental_price_percentual_change"), meanRemove("avg_montly_rental_price_percentual_change"), meanInitial
