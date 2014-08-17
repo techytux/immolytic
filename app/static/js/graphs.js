@@ -2,6 +2,8 @@ var data;
 
 function meanAdd(field){
 	return function(p, v) {
+		console.log(field);
+		console.log(p.mean);
 		var				
 			count = p.count + 1,
 			sum   = p.sum + v[field],
@@ -109,11 +111,8 @@ $.getJSON( "/search", function( resp ) {
 		chart1 = dc.rowChart("#s1"),
 		chart2 = dc.rowChart("#s2"),
 		chart3 = dc.rowChart("#s3"),
-		chart4 = dc.barChart("#s4"),
-		//chart5 = dc.scatterPlot("#s5"),
-		//chart6 = dc.bubbleChart("#s6"),
-		//chart7 = dc.bubbleChart("#s7"),
-		//chart8 = dc.bubbleChart("#s8"),
+		chart4 = dc.rowChart("#s4"),
+		chart5 = dc.barChart("#s5"),
 
 		summary1 = dc.numberDisplay("#n1");
 		//summary2 = dc.numberDisplay("#n2"),
@@ -161,12 +160,16 @@ $.getJSON( "/search", function( resp ) {
 		groupDistrictPriceSq       = dimDistrict.group().reduce(
 			meanAdd("buy_price_sq"), meanRemove("buy_price_sq"), meanInitial
 		),
-		groupDistrictBrokerIndex   = dimDistrict.group().reduce(
+		groupDistrictBrokerIndex = dimDistrict.group().reduce(
 			ratioAdd("buy_price_sq", "avg_anual_rental_price_sq"), ratioRemove("buy_price_sq", "avg_anual_rental_price_sq"), ratioInitial
 		),
-		groupDistrictAffordabilityIndex   = dimDistrict.group().reduce(
+		groupDistrictAffordabilityIndex = dimDistrict.group().reduce(
 			ratioAdd("avg_montly_rental_price", "household_income"), ratioRemove("avg_montly_rental_price", "household_income"), ratioInitial
 		),
+		groupDistrictPriceChange = dimDistrict.group().reduce(
+			meanAdd("avg_montly_rental_price_percentual_change"), meanRemove("avg_montly_rental_price_percentual_change"), meanInitial
+		),
+
 		groupFloorAreaWishlist = dimFloorArea.group().reduceSum(function(d){
 			return d.added_to_wishlist;		
 		}),   
@@ -203,6 +206,7 @@ $.getJSON( "/search", function( resp ) {
 		// broker index per district
 		chart2
         		.height(300)
+			.margins(chart_margins)
 			.dimension(dimDistrict)
         		.group(groupDistrictBrokerIndex)
 			.valueAccessor(function(d){
@@ -243,8 +247,30 @@ $.getJSON( "/search", function( resp ) {
         		.elasticX(true)
        			.xAxis().ticks(4);
 
-		// wishlisted per floor area
+		// affordability index per district
 		chart4
+        		.height(300)
+			.margins(chart_margins)
+			.dimension(dimDistrict)
+        		.group(groupDistrictPriceChange)
+			.valueAccessor(function(d){
+				return d.value.mean;			
+			})
+			.ordering(function(d){
+				return -d.value.mean;		
+			})
+        		.ordinalColors(color_palette)
+        		.label(function (d) {
+            			return d.key;
+       			 })
+        		.title(function (d) {
+           			return d.value.mean;
+        		})
+        		.elasticX(true)
+       			.xAxis().ticks(4);
+
+		// wishlisted per floor area
+		chart5
         		.height(300)
 			.margins(chart_margins_bar)
 			.dimension(dimFloorArea)
