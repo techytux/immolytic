@@ -50,46 +50,58 @@ function ratioInitial() {
 	return { numerator : 0, denominator : 0, ratio : 0 };
 };
 
+function createTable(data) {
+    $('#exposeTable').dataTable( {
+        "data": data,
+        //"scrollX": true,
+        "columns": [
+            { "data": "id" },
+            { "data": "city" },
+            { "data": "street" },
+            { "data": "floor_space", "sClass": "numeric" },
+            { "data": "price", render: $.fn.dataTable.render.number( ',', '.', 0, '€' ), "sClass": "numeric" },
+            { "data": "buy_price_sq", render: $.fn.dataTable.render.number( ',', '.', 0, '€' ), "sClass": "numeric" },
+            { "data": "avg_anual_rental_price_sq", render: $.fn.dataTable.render.number( ',', '.', 0, '€' ), "sClass": "numeric" },
+            { "data": "avg_montly_rental_price_sq", render: $.fn.dataTable.render.number( ',', '.', 0, '€' ), "sClass": "numeric" },
+            { "data": "household_income", render: $.fn.dataTable.render.number( ',', '.', 0, '€' ), "sClass": "numeric" },
+            //built_in_kitchen
+            { "data":  function ( data, type, full, meta ) {
+                if (type == "display") {
+                    return data.built_in_kitchen == 1 ?
+                        "<span class=\"glyphicon glyphicon-ok\"></span>" :
+                        "<span class=\"glyphicon glyphicon-remove\"></span>";
+                } else {
+                    return data.built_in_kitchen;
+                }
+            }, "sClass": "boolean"},
+            //balcony
+            { "data": function ( data, type, full, meta ) {
+                if (type == "display") {
+                    return data.balcony == 1 ?
+                        "<span class=\"glyphicon glyphicon-ok\"></span>" :
+                        "<span class=\"glyphicon glyphicon-remove\"></span>";
+                } else {
+                    return data.balcony;
+                }
+            }, "sClass": "boolean"},
+            { "data": "postcode" },
+            { "data": "district_name" },
+            { "data": "quarter" }
+        ]
+    });
+}
+
+function refreshTable(newData) {
+    var table = $('#exposeTable').DataTable();
+    table.destroy();
+    createTable(newData);
+}
+
 $.getJSON( "/search", function( resp ) {
 
 	data = resp.results;
-      $('#exposeTable').dataTable( {
-          "data": data,
-          "columns": [
-              { "data": "id" },
-              { "data": "city" },
-              { "data": "street" },
-              { "data": "floor_space", "sClass": "numeric" },
-              { "data": "price", render: $.fn.dataTable.render.number( ',', '.', 0, '€' ), "sClass": "numeric" },
-              { "data": "buy_price_sq", render: $.fn.dataTable.render.number( ',', '.', 0, '€' ), "sClass": "numeric" },
-              { "data": "avg_anual_rental_price_sq", render: $.fn.dataTable.render.number( ',', '.', 0, '€' ), "sClass": "numeric" },
-              { "data": "avg_montly_rental_price_sq", render: $.fn.dataTable.render.number( ',', '.', 0, '€' ), "sClass": "numeric" },
-              { "data": "household_income", render: $.fn.dataTable.render.number( ',', '.', 0, '€' ), "sClass": "numeric" },
-              //built_in_kitchen
-              { "data":  function ( data, type, full, meta ) {
-                  if (type == "display") {
-                      return data.built_in_kitchen == 1 ?
-                          "<span class=\"glyphicon glyphicon-ok\"></span>" :
-                          "<span class=\"glyphicon glyphicon-remove\"></span>";
-                  } else {
-                      return data.built_in_kitchen;
-                  }
-              }, "sClass": "boolean"},
-              //balcony
-              { "data": function ( data, type, full, meta ) {
-                  if (type == "display") {
-                      return data.balcony == 1 ?
-                          "<span class=\"glyphicon glyphicon-ok\"></span>" :
-                          "<span class=\"glyphicon glyphicon-remove\"></span>";
-                  } else {
-                      return data.balcony;
-                  }
-              }, "sClass": "boolean"},
-              { "data": "postcode" },
-              { "data": "district_name" },
-              { "data": "quarter" }
-          ]
-      });
+
+    createTable(data);
 
 	var
 		color_palette = ['#cc4125', '#ff6513', '#ff891b', '#f6b26b', '#38761d', '#6aa84f', '#93c47d', '#b6d7a8', '#584c7f', '#19077c', '#3a0dcc', '#5f74ff'],
