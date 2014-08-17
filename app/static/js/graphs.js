@@ -56,12 +56,33 @@ $.getJSON( "/search", function( resp ) {
           "columns": [
               { "data": "id" },
               { "data": "city" },
+              { "data": "street" },
               { "data": "floor_space", "sClass": "numeric" },
               { "data": "price", render: $.fn.dataTable.render.number( ',', '.', 0, '€' ), "sClass": "numeric" },
               { "data": "buy_price_sq", render: $.fn.dataTable.render.number( ',', '.', 0, '€' ), "sClass": "numeric" },
               { "data": "avg_anual_rental_price_sq", render: $.fn.dataTable.render.number( ',', '.', 0, '€' ), "sClass": "numeric" },
               { "data": "avg_montly_rental_price_sq", render: $.fn.dataTable.render.number( ',', '.', 0, '€' ), "sClass": "numeric" },
               { "data": "household_income", render: $.fn.dataTable.render.number( ',', '.', 0, '€' ), "sClass": "numeric" },
+              //built_in_kitchen
+              { "data":  function ( data, type, full, meta ) {
+                  if (type == "display") {
+                      return data.built_in_kitchen == "true" ?
+                          "<span class=\"glyphicon glyphicon-ok\"></span>" :
+                          "<span class=\"glyphicon glyphicon-remove\"></span>";
+                  } else {
+                      return data.built_in_kitchen == "true" ? 1 : 0;
+                  }
+              }, "sClass": "boolean"},
+              //balcony
+              { "data": function ( data, type, full, meta ) {
+                  if (type == "display") {
+                      return data.balcony == "true" ?
+                          "<span class=\"glyphicon glyphicon-ok\"></span>" :
+                          "<span class=\"glyphicon glyphicon-remove\"></span>";
+                  } else {
+                      return data.balcony == "true" ? 1 : 0;
+                  }
+              }, "sClass": "boolean"},
               { "data": "postcode" },
               { "data": "district_name" },
               { "data": "quarter" }
