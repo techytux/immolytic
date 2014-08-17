@@ -134,6 +134,7 @@ def merge_rent_prices(crawled_data, rent_price_trends):
     new_df['avg_anual_rental_price_sq'] = new_df['avg_montly_rental_price_sq'].apply(lambda x: float(x) * 12)
     new_df['buy_price_sq'] = new_df['price'].astype(float) / new_df['floor_space'].astype(float)
     new_df['avg_montly_rental_price'] = new_df['avg_montly_rental_price_sq'].astype(float) * new_df['floor_space'].astype(float)
+    new_df['household_income_monthly'] = new_df['household_income'].astype(float) / 12.0
     return new_df
 
 
