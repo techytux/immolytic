@@ -70,7 +70,8 @@ $.getJSON( "/search", function( resp ) {
 
 	var
 		color_palette = ['#cc4125', '#ff6513', '#ff891b', '#f6b26b', '#38761d', '#6aa84f', '#93c47d', '#b6d7a8', '#584c7f', '#19077c', '#3a0dcc', '#5f74ff'],
-		chart_margins = {top: 10, right: 20, bottom: 30, left: 20},
+		chart_margins = {top: 5, right: 20, bottom: 30, left: 5},
+		chart_margins_bar = {top: 10, right: 20, bottom: 30, left: 30},
 		//berlinChart = dc.geoChoroplethChart("#s1"),
 		chart1 = dc.rowChart("#s1"),
 		chart2 = dc.rowChart("#s2"),
@@ -90,13 +91,13 @@ $.getJSON( "/search", function( resp ) {
 		}),
 		dimFloorArea = data.dimension(function(d){
 			if (d.floor_space < 50){
-				return "0-49";
+				return " 0-49";
 			}
 			else if (d.floor_space < 80) {
-				return "50-79";
+				return " 50-79";
 			}
 			else if (d.floor_space < 100) {
-				return "80-99";
+				return " 80-99";
 			}
 			else if (d.floor_space < 150) {
 				return "100-150";
@@ -125,6 +126,9 @@ $.getJSON( "/search", function( resp ) {
 		groupDistrictAffordabilityIndex   = dimDistrict.group().reduce(
 			ratioAdd("avg_montly_rental_price", "household_income"), ratioRemove("avg_montly_rental_price", "household_income"), ratioInitial
 		),
+		groupFloorAreaWishlist = dimFloorArea.group().reduceSum(function(d){
+			return d.added_to_wishlist;		
+		}),   
 
 		groupQuarterPropertyCount  = dimQuarter.group().reduceCount();
 		groupQuarterPriceSq    = dimQuarter.group().reduce(
@@ -150,7 +154,6 @@ $.getJSON( "/search", function( resp ) {
         		.title(function (d) {
            			return d.value;
         		})
-        		.elasticX(true)
        			.xAxis().ticks(4);
 		
 		// broker index per district
@@ -162,14 +165,14 @@ $.getJSON( "/search", function( resp ) {
 				return d.value.ratio;			
 			})
 			.ordering(function(d){
-				return -d.value;		
+				return -d.value.ratio;		
 			})
         		.ordinalColors(color_palette)
         		.label(function (d) {
             			return d.key;
        			 })
         		.title(function (d) {
-           			return d.value;
+           			return d.value.ratio;
         		})
         		.elasticX(true)
        			.xAxis().ticks(4);
@@ -184,27 +187,24 @@ $.getJSON( "/search", function( resp ) {
 				return d.value.ratio;			
 			})
 			.ordering(function(d){
-				return -d.value;		
+				return -d.value.ratio;		
 			})
         		.ordinalColors(color_palette)
         		.label(function (d) {
             			return d.key;
        			 })
         		.title(function (d) {
-           			return d.value;
+           			return d.value.ratio;
         		})
         		.elasticX(true)
        			.xAxis().ticks(4);
 
-		// affordability index per district
+		// wishlisted per floor area
 		chart4
         		.height(300)
-			.margins(chart_margins)
-			.dimension(dimDistrict)
-        		.group(groupDistrictAffordabilityIndex)
-			.valueAccessor(function(d){
-				return d.value.ratio;			
-			})
+			.margins(chart_margins_bar)
+			.dimension(dimFloorArea)
+        		.group(groupFloorAreaWishlist)
 			.ordering(function(d){
 				return -d.value;		
 			})
@@ -216,7 +216,8 @@ $.getJSON( "/search", function( resp ) {
            			return d.value;
         		})
         		.elasticX(true)
-       			.xAxis().ticks(4);
+       			.x(d3.scale.ordinal())
+			.xUnits(dc.units.ordinal);
 	//});
 	dc.renderAll();
 });
