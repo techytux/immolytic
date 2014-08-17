@@ -94,13 +94,16 @@ $.getJSON( "/search", function( resp ) {
 	var
 		color_palette = ['#cc4125', '#ff6513', '#ff891b', '#f6b26b', '#38761d', '#6aa84f', '#93c47d', '#b6d7a8', '#584c7f', '#19077c', '#3a0dcc', '#5f74ff'],
 		chart_margins = {top: 5, right: 20, bottom: 30, left: 5},
-		chart_margins_bar = {top: 10, right: 20, bottom: 30, left: 30},
+		chart_margins_bar = {top: 10, right: 20, bottom: 30, left: 40},
 		//berlinChart = dc.geoChoroplethChart("#s1"),
 		chart1 = dc.rowChart("#s1"),
 		chart2 = dc.rowChart("#s2"),
 		chart3 = dc.rowChart("#s3"),
 		chart4 = dc.rowChart("#s4"),
 		chart5 = dc.barChart("#s5"),
+		chart6 = dc.barChart("#s6"),
+		chart7 = dc.barChart("#s7"),
+		chart8 = dc.barChart("#s8"),
 
 		summary1 = dc.numberDisplay("#n1");
 		//summary2 = dc.numberDisplay("#n2"),
@@ -111,6 +114,9 @@ $.getJSON( "/search", function( resp ) {
 
 	// crossfilter dimensions	
 	var
+		dimBalcony = data.dimension(function(d){
+			return d.balcony;
+		}),
 		dimDistrict = data.dimension(function(d){
 			return d.compiled_district_name;
 		}),
@@ -130,6 +136,9 @@ $.getJSON( "/search", function( resp ) {
 			else {
 				return "> 150";
 			} 
+		}),
+		dimKitchen = data.dimension(function(d){
+			return d.built_in_kitchen;
 		}),
 		dimRooms = data.dimension(function(d){
 			return d.number_of_rooms;
@@ -158,9 +167,18 @@ $.getJSON( "/search", function( resp ) {
 			meanAdd("avg_montly_rental_price_percentual_change"), meanRemove("avg_montly_rental_price_percentual_change"), meanInitial
 		),
 
+		groupBalconyWishlist = dimBalcony.group().reduceSum(function(d){
+			return d.added_to_wishlist;		
+		}), 
 		groupFloorAreaWishlist = dimFloorArea.group().reduceSum(function(d){
 			return d.added_to_wishlist;		
-		}),   
+		}),
+		groupKitchenWishlist = dimKitchen.group().reduceSum(function(d){
+			return d.added_to_wishlist;		
+		}),
+		groupRoomsWishlist = dimRooms.group().reduceSum(function(d){
+			return d.added_to_wishlist;		
+		}),
 
 		groupQuarterPropertyCount  = dimQuarter.group().reduceCount();
 		groupQuarterPriceSq    = dimQuarter.group().reduce(
@@ -267,11 +285,59 @@ $.getJSON( "/search", function( resp ) {
 				return -d.value;		
 			})
         		.ordinalColors(color_palette)
-        		.label(function (d) {
-            			return d.key;
-       			 })
         		.title(function (d) {
            			return d.value;
+        		})
+        		.elasticX(true)
+       			.x(d3.scale.ordinal())
+			.xUnits(dc.units.ordinal);
+
+		// wishlisted per number of rooms
+		chart6
+        		.height(300)
+			.margins(chart_margins_bar)
+			.dimension(dimRooms)
+        		.group(groupRoomsWishlist)
+			.ordering(function(d){
+				return -d.value;		
+			})
+        		.ordinalColors(color_palette)
+        		.title(function (d) {
+           			return d.value;
+        		})
+        		.elasticX(true)
+       			.x(d3.scale.ordinal())
+			.xUnits(dc.units.ordinal);
+
+		// wishlisted per balcony or lack there of
+		chart7
+        		.height(300)
+			.margins(chart_margins_bar)
+			.dimension(dimBalcony)
+        		.group(groupBalconyWishlist)
+			.ordering(function(d){
+				return -d.key;		
+			})
+        		.ordinalColors(color_palette)
+        		.title(function (d) {
+           			return d.key ? "Balcony: " + d.value: "No balcony: " + d.value;
+        		})
+        		.elasticX(true)
+       			.x(d3.scale.ordinal())
+			.xUnits(dc.units.ordinal);
+
+		// wishlisted per kitchen or lack there of
+		chart8
+        		.height(300)
+			.margins(chart_margins_bar)
+			.dimension(dimKitchen)
+        		.group(groupKitchenWishlist)
+			.ordering(function(d){
+				return -d.key;		
+			})
+        		.ordinalColors(color_palette)
+        		.title(function (d) {
+           			return d.key ? "Built-in kitchen: " + d.value: "No built-in kitchen: " + d.value;
         		})
         		.elasticX(true)
        			.x(d3.scale.ordinal())
