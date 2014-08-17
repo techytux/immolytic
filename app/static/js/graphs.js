@@ -137,6 +137,9 @@ $.getJSON( "/search", function( resp ) {
 
 	var
 		color_palette = ['#cc4125', '#ff6513', '#ff891b', '#f6b26b', '#38761d', '#6aa84f', '#93c47d', '#b6d7a8', '#584c7f', '#19077c', '#3a0dcc', '#5f74ff'],
+		color_palette2 = ['#ff6513', '#ff6513', '#ff891b', '#f6b26b', '#38761d', '#6aa84f', '#93c47d', '#b6d7a8', '#584c7f', '#19077c', '#3a0dcc', '#5f74ff'],
+		color_palette3 = ['#f6b26b', '#93c47d', '#ff891b', '#f6b26b', '#38761d', '#6aa84f', '#93c47d', '#b6d7a8', '#584c7f', '#19077c', '#3a0dcc', '#5f74ff'],
+		color_palette4 = ['#93c47d', '#19077c', '#ff891b', '#f6b26b', '#38761d', '#6aa84f', '#93c47d', '#b6d7a8', '#584c7f', '#19077c', '#3a0dcc', '#5f74ff'],
 		chart_margins = {top: 5, right: 20, bottom: 30, left: 5},
 		chart_margins_bar = {top: 10, right: 20, bottom: 30, left: 40},
 		//berlinChart = dc.geoChoroplethChart("#s1"),
@@ -385,7 +388,7 @@ $.getJSON( "/search", function( resp ) {
 			.ordering(function(d){
 				return -d.value;		
 			})
-        		.ordinalColors(color_palette)
+        		.ordinalColors(color_palette2)
         		.title(function (d) {
            			return d.value;
         		})
@@ -402,7 +405,7 @@ $.getJSON( "/search", function( resp ) {
 			.ordering(function(d){
 				return -d.key;		
 			})
-        		.ordinalColors(color_palette)
+        		.ordinalColors(color_palette3)
 			.label(function (d){
 				return d.key ? "Balcony: " + d.value: "No balcony: " + d.value;		
 			})
@@ -418,7 +421,7 @@ $.getJSON( "/search", function( resp ) {
 			.ordering(function(d){
 				return -d.key;		
 			})
-        		.ordinalColors(color_palette)
+        		.ordinalColors(color_palette4)
         		.label(function (d) {
            			return d.key ? "Built-in kitchen: " + d.value: "No built-in kitchen: " + d.value;
         		})
@@ -461,7 +464,7 @@ $.getJSON( "/search", function( resp ) {
 				return d.mean;			
 			})
 			.formatNumber(function(d){
-				return "EUR " + d.toFixed(2);
+				return "EUR " + d3.format(",")(d.toFixed(2));
 			});
 	//});
 	dc.renderAll();
