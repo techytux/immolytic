@@ -2,8 +2,6 @@ var data;
 
 function meanAdd(field){
 	return function(p, v) {
-		console.log(field);
-		console.log(p.mean);
 		var				
 			count = p.count + 1,
 			sum   = p.sum + v[field],
@@ -117,19 +115,25 @@ $.getJSON( "/search", function( resp ) {
 		chart7 = dc.barChart("#s7"),
 		chart8 = dc.barChart("#s8"),
 
-		summary1 = dc.numberDisplay("#n1");
-		//summary2 = dc.numberDisplay("#n2"),
-		//summary3 = dc.numberDisplay("#n3"),
-		//summary4 = dc.numberDisplay("#n4");
+		summary1 = dc.numberDisplay("#n1"),
+		summary2 = dc.numberDisplay("#n2"),
+		summary3 = dc.numberDisplay("#n3"),
+		summary4 = dc.numberDisplay("#n4");
 
 	var data = crossfilter(data);
 
 	// crossfilter dimensions	
 	var
+		dimId = data.dimension(function(d){
+			return d.id;
+		}),
 		dimBalcony = data.dimension(function(d){
 			return d.balcony;
 		}),
 		dimDistrict = data.dimension(function(d){
+			return d.compiled_district_name;
+		}),
+		dimDistrict2 = data.dimension(function(d){
 			return d.compiled_district_name;
 		}),
 		dimFloorArea = data.dimension(function(d){
@@ -165,14 +169,44 @@ $.getJSON( "/search", function( resp ) {
 
 	// crossfilter groups
 	var
+		groupDistricFloorArea = dimDistrict.group().reduce(
+			meanAdd("floor_space"), meanRemove("floor_space"), meanInitial
+		),
+		groupDistricRooms = dimDistrict.group().reduce(
+			meanAdd("number_of_rooms"), meanRemove("number_of_rooms"), meanInitial
+		),
+		groupDistricRooms2 = dimDistrict2.group().reduce(
+			meanAdd("number_of_rooms"), meanRemove("number_of_rooms"), meanInitial
+		),
 		groupDistrictPropertyCount = dimDistrict.group().reduceCount(),
+
+		groupAllId = dimId.groupAll().reduceCount(),
+		groupAllFloorArea = dimId.groupAll().reduce(
+			meanAdd("floor_space"), meanRemove("floor_space"), meanInitial
+		),
+		groupAllIncome = dimId.groupAll().reduce(
+			meanAdd("household_income"), meanRemove("household_income"), meanInitial
+		),
+		groupAllAffordabilityIndex = dimId.groupAll().reduce(
+			ratioAdd("avg_montly_rental_price", "household_income"), ratioRemove("avg_montly_rental_price", "household_income"), ratioInitial
+		),
+		groupAllBrokerIndex = dimId.groupAll().reduce(
+			ratioAdd("buy_price_sq", "avg_anual_rental_price_sq"), ratioRemove("buy_price_sq", "avg_anual_rental_price_sq"), ratioInitial
+		),
+
 		groupDistrictPriceSq       = dimDistrict.group().reduce(
 			meanAdd("buy_price_sq"), meanRemove("buy_price_sq"), meanInitial
 		),
 		groupDistrictBrokerIndex = dimDistrict.group().reduce(
 			ratioAdd("buy_price_sq", "avg_anual_rental_price_sq"), ratioRemove("buy_price_sq", "avg_anual_rental_price_sq"), ratioInitial
 		),
+		groupDistrictBrokerIndex2 = dimDistrict2.group().reduce(
+			ratioAdd("buy_price_sq", "avg_anual_rental_price_sq"), ratioRemove("buy_price_sq", "avg_anual_rental_price_sq"), ratioInitial
+		),
 		groupDistrictAffordabilityIndex = dimDistrict.group().reduce(
+			ratioAdd("avg_montly_rental_price", "household_income"), ratioRemove("avg_montly_rental_price", "household_income"), ratioInitial
+		),
+		groupDistrictAffordabilityIndex2 = dimDistrict2.group().reduce(
 			ratioAdd("avg_montly_rental_price", "household_income"), ratioRemove("avg_montly_rental_price", "household_income"), ratioInitial
 		),
 		groupDistrictPriceChange = dimDistrict.group().reduce(
@@ -355,26 +389,43 @@ $.getJSON( "/search", function( resp ) {
        			.x(d3.scale.ordinal())
 			.xUnits(dc.units.ordinal);
 
-		// contacted realtor vs wishlisted
-	//	chart5
-       // 		.height(300)
-	//		.margins(chart_margins_bar)
-//			.dimension(dimWishlist)
-       // 		.group(groupWishlistContacted)
-       // 		.ordinalColors(color_palette)
-       // 		.title(function (d) {
-        //   			return d.value;
-       // 		})
-       // 		.elasticY(true)
-       //			.x(d3.scale.linear());
 
-		// summary - total wishlisted
+		// Number of listings
 		summary1
-			.formatNumber(d3.format(".2s"))
-			//.valueAccessor(function(d){
-			//	return d.value.ratio;			
-			//});
-			.group(groupFloorAreaWishlist);
+			.group(groupAllBrokerIndex)
+			.valueAccessor(function(d){
+				return d.ratio;			
+			})
+			.formatNumber(function(d){
+				return d.toFixed(0);
+			});
+		// Affordability index
+		summary2
+			.group(groupAllAffordabilityIndex)
+			.valueAccessor(function(d){
+				return d.ratio;			
+			})
+			.formatNumber(function(d){
+				return d.toFixed(4);
+			});
+		// Average floor area
+		summary3
+			.group(groupAllFloorArea)
+			.valueAccessor(function(d){
+				return d.mean;			
+			})
+			.formatNumber(function(d){
+				return d.toFixed(2);
+			});
+		// Average household income
+		summary4
+			.group(groupAllIncome)
+			.valueAccessor(function(d){
+				return d.mean;			
+			})
+			.formatNumber(function(d){
+				return "EUR " + d.toFixed(2);
+			});
 	//});
 	dc.renderAll();
 });
