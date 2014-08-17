@@ -1,3 +1,3 @@
 #!/bin/bash
 
-python tests.py
+flask/bin/python2.7 tests.py
