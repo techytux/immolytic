@@ -6,6 +6,7 @@ function meanAdd(field){
 			count = p.count + 1,
 			sum   = p.sum + v[field],
 			mean  = count ? sum / count : 0;
+			mean  = Math.abs(mean);
 		return { count : count, sum : sum, mean : mean };
 	};
 };
@@ -16,6 +17,7 @@ function meanRemove(field){
 			count = p.count - 1,
 			sum   = p.sum - v[field],
 			mean  = count ? sum / count : 0;
+			mean  = Math.abs(mean);
 		return { count : count, sum : sum, mean : mean };
 	};
 };
@@ -30,6 +32,7 @@ function ratioAdd(num, den){
 			numerator   = p.numerator + v[num],
 			denominator = p.denominator + v[den],
 			ratio       = denominator ? numerator / denominator : 0;
+			ratio       = Math.abs(ratio);
 		return { numerator : numerator, denominator : denominator, ratio : ratio };
 	};
 };
@@ -40,6 +43,7 @@ function ratioRemove(num, den){
 			numerator   = p.numerator - v[num],
 			denominator = p.denominator - v[den],
 			ratio       = denominator ? numerator / denominator : 0;
+			ratio       = Math.abs(ratio);
 		return { numerator : numerator, denominator : denominator, ratio : ratio };
 	};
 };
@@ -98,8 +102,34 @@ function refreshTable(newData) {
 $.getJSON( "/search", function( resp ) {
 
 	data = resp.results;
+	createTable(data);
 
-    createTable(data);
+	var postcodeForm = $("#postcode_form");
+	postcodeForm.dim = null;
+	postcodeForm.render = function(){};
+	postcodeForm.redraw = function(){};
+	postcodeForm.dimension = function(d){
+		if (d) {
+			postcodeForm.dim = d;
+			return postcodeForm;
+		}
+		else {
+			return postcodeForm.dim;
+		}
+	};
+	dc.registerChart(postcodeForm);
+	postcodeForm.submit(function(e){
+		e.preventDefault();
+		var post_code = $("#post_code").val();
+		if(post_code) {
+			postcodeForm.dimension().filter(post_code);
+		}
+		else {
+			postcodeForm.dimension().filter(null);
+		};
+		dc.redrawAll();
+	});
+	
 
 	var
 		color_palette = ['#cc4125', '#ff6513', '#ff891b', '#f6b26b', '#38761d', '#6aa84f', '#93c47d', '#b6d7a8', '#584c7f', '#19077c', '#3a0dcc', '#5f74ff'],
@@ -165,7 +195,10 @@ $.getJSON( "/search", function( resp ) {
 		dimWishlist = data.dimension(function(d){
 			return d.added_to_wishlist;		
 		});
-
+		dimPostCode = data.dimension(function(d){
+			return d.postcode;		
+		});
+		postcodeForm.dimension(dimPostCode);
 
 	// crossfilter groups
 	var

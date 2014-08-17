@@ -45,17 +45,16 @@
 						<div class="col-md-12"><h3>Filters</h3></div>
 					</div>
           				<div class="row">
-          					<div class="col-md-3" id="f1">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" placeholder="Post Code" name="postCode">
-                                    <span class="input-group-btn">
-                                        <button class="btn btn-default" type="button" onclick="">Search</button>
-                                    </span>
-                                </div>
+          					<div class="col-md-6" id="f1">
+							<form id="postcode_form" class="form-inline" action="/" method="GET">
+								<div class="form-group">
+					            			<input id="post_code" type="text" class="form-control" placeholder="Post Code" name="postCode" />
+								</div>
+								<div class="form-group">
+					         			<button class="btn btn-danger" type="submit">Go!</button>
+								</div>
+							</form>
           					</div>
-          					<div class="col-md-3" id="f2"></div>
-          					<div class="col-md-3" id="f3"></div>
-          					<div class="col-md-3" id="f4"></div>
           				</div>
 					<div class="row">
 						<div class="col-md-12"><h3>Metrics per district</h3></div>
