@@ -67,8 +67,8 @@ $.getJSON( "/search", function( resp ) {
               { "data":  function ( data, type, full, meta ) {
                   if (type == "display") {
                       return data.built_in_kitchen == "true" ?
-                          "<span class=\"glyphicon glyphicon-ok\"></span>" :
-                          "<span class=\"glyphicon glyphicon-remove\"></span>";
+                          "<i class=\"glyphicon glyphicon-ok\"></i>" :
+                          "<i class=\"glyphicon glyphicon-remove\"></i>";
                   } else {
                       return data.built_in_kitchen == "true" ? 1 : 0;
                   }
@@ -77,8 +77,8 @@ $.getJSON( "/search", function( resp ) {
               { "data": function ( data, type, full, meta ) {
                   if (type == "display") {
                       return data.balcony == "true" ?
-                          "<span class=\"glyphicon glyphicon-ok\"></span>" :
-                          "<span class=\"glyphicon glyphicon-remove\"></span>";
+                          "<i class=\"glyphicon glyphicon-ok\"></i>" :
+                          "<i class=\"glyphicon glyphicon-remove\"></i>";
                   } else {
                       return data.balcony == "true" ? 1 : 0;
                   }
@@ -98,10 +98,15 @@ $.getJSON( "/search", function( resp ) {
 		chart2 = dc.rowChart("#s2"),
 		chart3 = dc.rowChart("#s3"),
 		chart4 = dc.barChart("#s4"),
-		chart5 = dc.bubbleChart("#s5"),
-		chart6 = dc.bubbleChart("#s6"),
-		chart7 = dc.bubbleChart("#s7"),
-		chart8 = dc.bubbleChart("#s8");
+		//chart5 = dc.scatterPlot("#s5"),
+		//chart6 = dc.bubbleChart("#s6"),
+		//chart7 = dc.bubbleChart("#s7"),
+		//chart8 = dc.bubbleChart("#s8"),
+
+		summary1 = dc.numberDisplay("#n1");
+		//summary2 = dc.numberDisplay("#n2"),
+		//summary3 = dc.numberDisplay("#n3"),
+		//summary4 = dc.numberDisplay("#n4");
 
 	var data = crossfilter(data);
 
@@ -132,6 +137,9 @@ $.getJSON( "/search", function( resp ) {
 		}),
 		dimQuarter = data.dimension(function(d){
 			return d.quarter;
+		}),
+		dimWishlist = data.dimension(function(d){
+			return d.added_to_wishlist;		
 		});
 
 
@@ -155,6 +163,9 @@ $.getJSON( "/search", function( resp ) {
 		groupQuarterPriceSq    = dimQuarter.group().reduce(
 			meanAdd("buy_price_sq"), meanRemove("buy_price_sq"), meanInitial
 		),
+		groupWishlistContacted = dimWishlist.group().reduceSum(function(d){
+			return d.contacted_realtor;	
+		});
 
 
 
@@ -239,6 +250,27 @@ $.getJSON( "/search", function( resp ) {
         		.elasticX(true)
        			.x(d3.scale.ordinal())
 			.xUnits(dc.units.ordinal);
+
+		// contacted realtor vs wishlisted
+	//	chart5
+       // 		.height(300)
+	//		.margins(chart_margins_bar)
+//			.dimension(dimWishlist)
+       // 		.group(groupWishlistContacted)
+       // 		.ordinalColors(color_palette)
+       // 		.title(function (d) {
+        //   			return d.value;
+       // 		})
+       // 		.elasticY(true)
+       //			.x(d3.scale.linear());
+
+		// summary - total wishlisted
+		summary1
+			.formatNumber(d3.format(".2s"))
+			//.valueAccessor(function(d){
+			//	return d.value.ratio;			
+			//});
+			.group(groupFloorAreaWishlist);
 	//});
 	dc.renderAll();
 });
