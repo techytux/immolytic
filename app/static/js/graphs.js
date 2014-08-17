@@ -28,28 +28,32 @@ function meanInitial() {
 
 function ratioAdd(num, den){
 	return function(p, v) {
-		var				
+		var
+			count = p.count + 1,			
 			numerator   = p.numerator + v[num],
-			denominator = p.denominator + v[den],
-			ratio       = denominator ? numerator / denominator : 0;
-			ratio       = Math.abs(ratio);
-		return { numerator : numerator, denominator : denominator, ratio : ratio };
+			denominator = p.denominator + v[den];
+		var	ratio       = denominator ? numerator / denominator : 0;
+		ratio       = Math.abs(ratio);
+		if (!count) {ratio = 0;}
+		return { numerator : numerator, denominator : denominator, ratio : ratio, count : count };
 	};
 };
 
 function ratioRemove(num, den){
 	return function(p, v) {
-		var				
+		var
+			count = p.count - 1,			
 			numerator   = p.numerator - v[num],
-			denominator = p.denominator - v[den],
-			ratio       = denominator ? numerator / denominator : 0;
-			ratio       = Math.abs(ratio);
-		return { numerator : numerator, denominator : denominator, ratio : ratio };
+			denominator = p.denominator - v[den];
+		var	ratio       = denominator ? numerator / denominator : 0;
+		ratio       = Math.abs(ratio);
+		if (!count) {ratio = 0;}
+		return { numerator : numerator, denominator : denominator, ratio : ratio, count : count };
 	};
 };
 
 function ratioInitial() {
-	return { numerator : 0, denominator : 0, ratio : 0 };
+	return { numerator : 0, denominator : 0, ratio : 0, count : 0 };
 };
 
 function createTable(data) {
@@ -368,6 +372,7 @@ $.getJSON( "/search", function( resp ) {
            			return d.value;
         		})
         		.elasticX(true)
+			.elasticY(true)
        			.x(d3.scale.ordinal())
 			.xUnits(dc.units.ordinal);
 
@@ -385,6 +390,7 @@ $.getJSON( "/search", function( resp ) {
            			return d.value;
         		})
         		.elasticX(true)
+			.elasticY(true)
        			.x(d3.scale.ordinal())
 			.xUnits(dc.units.ordinal);
 
@@ -402,6 +408,7 @@ $.getJSON( "/search", function( resp ) {
            			return d.key ? "Balcony: " + d.value: "No balcony: " + d.value;
         		})
         		.elasticX(true)
+			.elasticY(true)
        			.x(d3.scale.ordinal())
 			.xUnits(dc.units.ordinal);
 
@@ -419,6 +426,7 @@ $.getJSON( "/search", function( resp ) {
            			return d.key ? "Built-in kitchen: " + d.value: "No built-in kitchen: " + d.value;
         		})
         		.elasticX(true)
+			.elasticY(true)
        			.x(d3.scale.ordinal())
 			.xUnits(dc.units.ordinal);
 
