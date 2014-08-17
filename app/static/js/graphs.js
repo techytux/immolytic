@@ -66,21 +66,21 @@ $.getJSON( "/search", function( resp ) {
               //built_in_kitchen
               { "data":  function ( data, type, full, meta ) {
                   if (type == "display") {
-                      return data.built_in_kitchen == "true" ?
-                          "<i class=\"glyphicon glyphicon-ok\"></i>" :
-                          "<i class=\"glyphicon glyphicon-remove\"></i>";
+                      return data.built_in_kitchen == 1 ?
+                          "<span class=\"glyphicon glyphicon-ok\"></span>" :
+                          "<span class=\"glyphicon glyphicon-remove\"></span>";
                   } else {
-                      return data.built_in_kitchen == "true" ? 1 : 0;
+                      return data.built_in_kitchen;
                   }
               }, "sClass": "boolean"},
               //balcony
               { "data": function ( data, type, full, meta ) {
                   if (type == "display") {
-                      return data.balcony == "true" ?
-                          "<i class=\"glyphicon glyphicon-ok\"></i>" :
-                          "<i class=\"glyphicon glyphicon-remove\"></i>";
+                      return data.balcony == 1 ?
+                          "<span class=\"glyphicon glyphicon-ok\"></span>" :
+                          "<span class=\"glyphicon glyphicon-remove\"></span>";
                   } else {
-                      return data.balcony == "true" ? 1 : 0;
+                      return data.balcony;
                   }
               }, "sClass": "boolean"},
               { "data": "postcode" },
